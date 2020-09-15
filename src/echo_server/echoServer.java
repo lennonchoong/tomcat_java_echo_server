@@ -28,12 +28,11 @@ public class echoServer {
  
     }
  
-    // Handler for '/test' context
     static class TestHandler implements HttpHandler {
  
         @Override
         public void handle(HttpExchange he) throws IOException {
-            System.out.println("Serving the request");
+            System.out.println("Serving request");
             
             // Serve for POST requests only
             if (he.getRequestMethod().equalsIgnoreCase("POST")) {
@@ -43,25 +42,26 @@ public class echoServer {
                     // REQUEST Headers
                     Headers requestHeaders = he.getRequestHeaders();
                     Set<Map.Entry<String, List<String>>> entries = requestHeaders.entrySet();
-                    System.out.println(entries);
                     int contentLength = Integer.parseInt(requestHeaders.getFirst("Content-length"));
- 
+                    
                     // REQUEST Body
                     InputStream is = he.getRequestBody();
-                    System.out.println(is.toString());
                     byte[] data = new byte[contentLength];
                     int length = is.read(data);
- 
+                    
                     // RESPONSE Headers
                     Headers responseHeaders = he.getResponseHeaders();
- 
+                    
                     // Send RESPONSE Headers
-                    he.sendResponseHeaders(HttpURLConnection.HTTP_OK, contentLength);
- 
+                    he.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                    
                     // RESPONSE Body
                     OutputStream os = he.getResponseBody();
- 
-                    os.write(data);
+                    
+                    String response = "Return response: " + new String(data) + "\n" + 
+                    		"Response Code: " + HttpURLConnection.HTTP_OK + '\n';
+                    
+                    os.write(response.getBytes());
  
                     he.close();
  
